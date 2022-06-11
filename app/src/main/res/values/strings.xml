@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">OneHacksApp</string>
+    <string name="title_text">Press START to start the server</string>
+    <string name="button_text_start">START</string>
+    <string name="server_status_offline">SERVER OFFLINE</string>
+    <string name="server_status_online">SERVER ONLINE</string>
+    <string name="server_status_error">SERVER ERROR - TRY AGAIN</string>
+    <string name="button_text_stop">STOP</string>
+</resources>
