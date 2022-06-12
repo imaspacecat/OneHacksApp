@@ -28,6 +28,9 @@ public class HTTPServer extends NanoHTTPD{
         }
 
         if(!createdJavascript) {
+            for (int i = 0; i < MainActivity.data.keySet().size(); i++) {
+                System.out.println(MainActivity.data.keySet().toArray()[i]);
+            }
             for (int i = 0; i < MainActivity.data.size(); i++) {
                 updateJavascript += "$(\".data" + i + "\").load(location.href + \" .data" + i + "\");\n";
             }
@@ -35,6 +38,7 @@ public class HTTPServer extends NanoHTTPD{
         }
 
 
+        // switch between id and class
         String msg =
                     "<!DOCTYPE html>\n" +
                             "<html>\n" +
@@ -45,6 +49,19 @@ public class HTTPServer extends NanoHTTPD{
                             "    <p>Accelerometer X: <div class=\"data0\">" + MainActivity.data.get("accelerometerX") + "</div></p>\n" +
                             "    <p>Accelerometer Y: <div class=\"data1\">" + (MainActivity.data.get("accelerometerY")) + "</div></p>\n" +
                             "    <p>Accelerometer Z: <div class=\"data2\">" + (MainActivity.data.get("accelerometerZ")) + "</div></p>\n" +
+                            "    <p>Linear Acceleration X: <div class=\"data3\">" + (MainActivity.data.get("linearAccelerationX")) + "</div></p>\n" +
+                            "    <p>Linear Acceleration Y: <div class=\"data4\">" + (MainActivity.data.get("linearAccelerationY")) + "</div></p>\n" +
+                            "    <p>Linear Acceleration Z: <div class=\"data5\">" + (MainActivity.data.get("linearAccelerationZ")) + "</div></p>\n" +
+                            "    <p>Gyroscope X: <div class=\"data6\">" + (MainActivity.data.get("gyroscopeX")) + "</div></p>\n" +
+                            "    <p>Gyroscope Y: <div class=\"data7\">" + (MainActivity.data.get("gyroscopeY")) + "</div></p>\n" +
+                            "    <p>Gyroscope Z: <div class=\"data8\">" + (MainActivity.data.get("gyroscopeZ")) + "</div></p>\n" +
+                            "    <p>Magnetic Field X: <div class=\"data9\">" + (MainActivity.data.get("magneticFieldX")) + "</div></p>\n" +
+                            "    <p>Magnetic Field Y: <div class=\"data10\">" + (MainActivity.data.get("magneticFieldY")) + "</div></p>\n" +
+                            "    <p>Magnetic Field Z: <div class=\"data11\">" + (MainActivity.data.get("magneticFieldZ")) + "</div></p>\n" +
+                            "    <p>Ambient Temperature: <div class=\"data12\">" + (MainActivity.data.get("ambientTemperature")) + "</div></p>\n" +
+                            "    <p>Light: <div class=\"data13\">" + (MainActivity.data.get("light")) + "</div></p>\n" +
+                            "    <p>Pressure: <div class=\"data14\">" + (MainActivity.data.get("pressure")) + "</div></p>\n" +
+                            "    <p>Relative Humidity: <div class=\"data15\">" + (MainActivity.data.get("relativeHumidity")) + "</div></p>\n" +
                             "    <script>\n" +
                             "        $(document).ready(\n" +
                             "            function(){\n" +

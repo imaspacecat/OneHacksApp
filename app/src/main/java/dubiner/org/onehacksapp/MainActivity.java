@@ -13,16 +13,13 @@ import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.Formatter;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 
@@ -34,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView serverStatusText;
     private Button startButton;
 
+    // textAzimuth, textPitch, textRoll,
     private TextView textAccelerometerX, textAccelerometerY, textAccelerometerZ,
             textLinearAccelerometerX, textLinearAccelerometerY, textLinearAccelerometerZ,
             textGyroscopeX, textGyroscopeY, textGyroscopeZ,
@@ -59,13 +57,25 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private final int PORT = 8080;
 
+//    private float[] gravity;
+//    private float[] geomagnetic;
+//    private float[] rotationMatrix;
+//    private float[] orientation;
+
     public static Map<String, Float> data;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // get text id
+//        orientation = new float[3];
+
+//        // get text id
+//        textAzimuth = findViewById(R.id.textAzimuth);
+//        textPitch = findViewById(R.id.textPitch);
+//        textRoll = findViewById(R.id.textRoll);
+
         textAccelerometerX = findViewById(R.id.textAccelerometerX);
         textAccelerometerY = findViewById(R.id.textAccelerometerY);
         textAccelerometerZ = findViewById(R.id.textAccelerometerZ);
@@ -99,6 +109,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // create sensor objects
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
+
         accelerometer       = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         linearAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         gyroscope           = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
@@ -111,7 +122,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //        allSensors = new ArrayList<>(Arrays.asList(accelerometer, linearAccelerometer, gyroscope,
 //                magnetometer, ambientTemperature, light, pressure, relativeHumidity)); // length = 8
         // individual sensor is at index 4
-        data = new HashMap<>();
+
+        data = new LinkedHashMap<>();
+//        data = new LinkedHashMap<>();
     }
 
     public void startServer(View view){
@@ -135,6 +148,22 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             startButton.setText(R.string.button_text_start);
 
         }
+        data.put("accelerometerX", 0f);
+        data.put("accelerometerY", 0f);
+        data.put("accelerometerZ", 0f);
+        data.put("linearAccelerationX", 0f);
+        data.put("linearAccelerationY", 0f);
+        data.put("linearAccelerationZ", 0f);
+        data.put("gyroscopeX", 0f);
+        data.put("gyroscopeY", 0f);
+        data.put("gyroscopeZ", 0f);
+        data.put("magneticFieldX", 0f);
+        data.put("magneticFieldY", 0f);
+        data.put("magneticFieldZ", 0f);
+        data.put("ambientTemperature", 0f);
+        data.put("light", 0f);
+        data.put("pressure", 0f);
+        data.put("relativeHumidity", 0f);
     }
 
     private String initIpAddress() {
@@ -148,16 +177,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onSensorChanged(SensorEvent event) {
-////        float[] accelerometerValues;
-//        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-//            data.put("accelerometerX", event.values[0]);
-//            data.put("accelerometerY", event.values[1]);
-//            data.put("accelerometerZ", event.values[2]);
-//            setLabels(event, new TextView[]{textAccelerometerX, textAccelerometerY, textAccelerometerZ});
-////            textAccelerometerX.setText("X: " + event.values[0]);
-////            textAccelerometerY.setText("X: " + event.values[1]);
-////            textAccelerometerZ.setText("X: " + event.values[2]);
-//        }
 
 //        for (int i = 0; i < allSensors.size(); i++) {
 //            if(event.sensor.getType() == allSensors.get(i).getType()){
@@ -173,8 +192,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            }
 //        }
 //
+//        if(gravity != null && geomagnetic != null){
+//            SensorManager.getRotationMatrix(rotationMatrix, null, gravity, geomagnetic);
+//            System.out.println(rotationMatrix == null);
+//            SensorManager.getOrientation(rotationMatrix, orientation);
+//            textAzimuth.setText("azimuth: " + orientation[0]);
+//            textAzimuth.setText("pitch: " + orientation[1]);
+//            textAzimuth.setText("roll: " + orientation[2]);
+//        }
+
+
         switch(event.sensor.getType()){
             case Sensor.TYPE_ACCELEROMETER:
+//                gravity = new float[]{event.values[0], event.values[1], event.values[2]};
                 data.put("accelerometerX", event.values[0]);
                 data.put("accelerometerY", event.values[1]);
                 data.put("accelerometerZ", event.values[2]);
@@ -193,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 setLabels(event, new TextView[]{textGyroscopeX, textGyroscopeY, textGyroscopeZ});
                 break;
             case Sensor.TYPE_MAGNETIC_FIELD:
+//                geomagnetic = new float[]{event.values[0], event.values[1], event.values[2]};
                 data.put("magneticFieldX", event.values[0]);
                 data.put("magneticFieldY", event.values[1]);
                 data.put("magneticFieldZ", event.values[2]);
