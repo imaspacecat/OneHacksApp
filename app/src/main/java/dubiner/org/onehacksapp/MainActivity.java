@@ -1,33 +1,124 @@
 package dubiner.org.onehacksapp;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.text.format.Formatter;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+
+// some inspiration from https://github.com/lopspower/AndroidWebServer/blob/c6a29257e9b077340dcba54871f5b3ed1029fc95/app/src/main/java/com/mikhaellopez/androidwebserver/MainActivity.java#L80
+
+public class MainActivity extends AppCompatActivity implements SensorEventListener {
     private HTTPServer server;
     private boolean serverStarted = false;
     private TextView serverStatusText;
     private Button startButton;
 
+    private TextView textAccelerometerX, textAccelerometerY, textAccelerometerZ,
+            textLinearAccelerometerX, textLinearAccelerometerY, textLinearAccelerometerZ,
+            textGyroscopeX, textGyroscopeY, textGyroscopeZ,
+            textMagnetometerX, textMagnetometerY, textMagnetometerZ,
+            textAmbientTemperature,
+            textLight,
+            textPressure,
+            textRelativeHumidity;
+//    private TextView[] allSensorTexts;
 
+
+    private SensorManager sensorManager;
+//    private List<Sensor> allSensors;
+    private Sensor accelerometer;
+    private Sensor linearAccelerometer;
+    private Sensor gyroscope;
+    private Sensor magnetometer;
+    private Sensor ambientTemperature;
+    private Sensor light;
+    private Sensor pressure;
+    private Sensor relativeHumidity;
+
+
+    private final int PORT = 8080;
+
+    public static Map<String, Float> data;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        serverStatusText = (TextView) findViewById(R.id.serverStatusText);
-        startButton = (Button) findViewById(R.id.startButton);
+
+        // get text id
+        textAccelerometerX = findViewById(R.id.textAccelerometerX);
+        textAccelerometerY = findViewById(R.id.textAccelerometerY);
+        textAccelerometerZ = findViewById(R.id.textAccelerometerZ);
+
+        textLinearAccelerometerX = findViewById(R.id.textLinearAccelerometerX);
+        textLinearAccelerometerY = findViewById(R.id.textLinearAccelerometerY);
+        textLinearAccelerometerZ = findViewById(R.id.textLinearAccelerometerZ);
+
+        textGyroscopeX = findViewById(R.id.textGyroscopeX);
+        textGyroscopeY = findViewById(R.id.textGyroscopeY);
+        textGyroscopeZ = findViewById(R.id.textGyroscopeZ);
+
+        textMagnetometerX = findViewById(R.id.textMagnetometerX);
+        textMagnetometerY = findViewById(R.id.textMagnetometerY);
+        textMagnetometerZ = findViewById(R.id.textMagnetometerZ);
+
+        textAmbientTemperature = findViewById(R.id.textAmbientTemperature);
+        textLight = findViewById(R.id.textLight);
+        textPressure = findViewById(R.id.textPressure);
+        textRelativeHumidity = findViewById(R.id.textRelativeHumidity);
+
+        serverStatusText = findViewById(R.id.serverStatusText);
+        startButton = findViewById(R.id.startButton);
+
+//        allSensorTexts = new TextView[]{textAccelerometerX, textAccelerometerY, textAccelerometerZ,
+//                textLinearAccelerometerX, textLinearAccelerometerY, textLinearAccelerometerZ, textGyroscopeX,
+//                textGyroscopeY, textGyroscopeZ, textMagnetometerX, textMagnetometerY, textMagnetometerZ,
+//                textAmbientTemperature, textLight, textPressure, textRelativeHumidity}; // length = 16
+//        // first individual sensortext is in index 12
+
+        // create sensor objects
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        accelerometer       = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        linearAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
+        gyroscope           = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        magnetometer        = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        ambientTemperature  = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        light               = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        pressure            = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        relativeHumidity    = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+
+//        allSensors = new ArrayList<>(Arrays.asList(accelerometer, linearAccelerometer, gyroscope,
+//                magnetometer, ambientTemperature, light, pressure, relativeHumidity)); // length = 8
+        // individual sensor is at index 4
+        data = new HashMap<>();
     }
 
     public void startServer(View view){
         if(!serverStarted) {
             try {
-                server = new HTTPServer(8080); // http://localhost:8080/
+                server = new HTTPServer(PORT);
+                System.out.println("Running! Go to " + initIpAddress());
                 serverStatusText.setText(R.string.server_status_online);
                 startButton.setText(R.string.button_text_stop);
                 serverStarted = true;
@@ -45,4 +136,122 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+    private String initIpAddress() {
+        WifiManager wm = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+        String ip = Formatter.formatIpAddress(wm.getConnectionInfo().getIpAddress());
+        System.out.println("Server running at: " + ip + ":" + PORT);
+        return "http://" + ip + ":" + PORT + "/";
+    }
+
+    @SuppressLint("SetTextI18n")
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+////        float[] accelerometerValues;
+//        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+//            data.put("accelerometerX", event.values[0]);
+//            data.put("accelerometerY", event.values[1]);
+//            data.put("accelerometerZ", event.values[2]);
+//            setLabels(event, new TextView[]{textAccelerometerX, textAccelerometerY, textAccelerometerZ});
+////            textAccelerometerX.setText("X: " + event.values[0]);
+////            textAccelerometerY.setText("X: " + event.values[1]);
+////            textAccelerometerZ.setText("X: " + event.values[2]);
+//        }
+
+//        for (int i = 0; i < allSensors.size(); i++) {
+//            if(event.sensor.getType() == allSensors.get(i).getType()){
+//                if(event.values.length > 1){
+//                    data.put(allSensors.get(i).getName() + "X", event.values[0]);
+//                    data.put(allSensors.get(i).getName() + "Y", event.values[1]);
+//                    data.put(allSensors.get(i).getName() + "Z", event.values[2]);
+//                    setLabels(event, new TextView[]{allSensorTexts[i], allSensorTexts[i+1], allSensorTexts[i+2]});
+//                } else{
+//                    data.put(allSensors.get(i).getName(), event.values[0]);
+//                    setLabels(event, new TextView[]{allSensorTexts[i + 8]});
+//                }
+//            }
+//        }
+//
+        switch(event.sensor.getType()){
+            case Sensor.TYPE_ACCELEROMETER:
+                data.put("accelerometerX", event.values[0]);
+                data.put("accelerometerY", event.values[1]);
+                data.put("accelerometerZ", event.values[2]);
+                setLabels(event, new TextView[]{textAccelerometerX, textAccelerometerY, textAccelerometerZ});
+                break;
+            case Sensor.TYPE_LINEAR_ACCELERATION:
+                data.put("linearAccelerationX", event.values[0]);
+                data.put("linearAccelerationY", event.values[1]);
+                data.put("linearAccelerationZ", event.values[2]);
+                setLabels(event, new TextView[]{textLinearAccelerometerX, textLinearAccelerometerY, textLinearAccelerometerZ});
+                break;
+            case Sensor.TYPE_GYROSCOPE:
+                data.put("gyroscopeX", event.values[0]);
+                data.put("gyroscopeY", event.values[1]);
+                data.put("gyroscopeZ", event.values[2]);
+                setLabels(event, new TextView[]{textGyroscopeX, textGyroscopeY, textGyroscopeZ});
+                break;
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                data.put("magneticFieldX", event.values[0]);
+                data.put("magneticFieldY", event.values[1]);
+                data.put("magneticFieldZ", event.values[2]);
+                setLabels(event, new TextView[]{textMagnetometerX, textMagnetometerY, textMagnetometerZ});
+                break;
+            case Sensor.TYPE_AMBIENT_TEMPERATURE:
+                data.put("ambientTemperature", event.values[0]);
+                textAmbientTemperature.setText("ambientTemperature: " + event.values[0]);
+                break;
+            case Sensor.TYPE_LIGHT:
+                data.put("light", event.values[0]);
+                textLight.setText("light: " + event.values[0]);
+                break;
+            case Sensor.TYPE_PRESSURE:
+                data.put("pressure", event.values[0]);
+                textPressure.setText("pressure: " + event.values[0]);
+                break;
+            case Sensor.TYPE_RELATIVE_HUMIDITY:
+                data.put("relativeHumidity", event.values[0]);
+                textRelativeHumidity.setText("relativeHumidity: " + event.values[0]);
+                break;
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int i) {
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, linearAccelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, gyroscope,           SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, magnetometer,        SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, ambientTemperature,  SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, light,               SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, pressure,            SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, relativeHumidity,    SensorManager.SENSOR_DELAY_NORMAL);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        sensorManager.unregisterListener(this);
+    }
+
+    // kinda scuffed but works
+    @SuppressLint("SetTextI18n")
+    private void setLabels(SensorEvent event, TextView[] textViews){
+        for(int i = 0; i < textViews.length; i++) {
+            String label = String.valueOf(textViews[i].getText());
+            if(label.contains(":")) {
+                textViews[i].setText(label.substring(0, label.indexOf(":")) + ": " + event.values[i]);
+            } else {
+                textViews[i].setText(label + ": " + event.values[i]);
+            }
+        }
+    }
+
 }

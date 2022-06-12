@@ -20,7 +20,7 @@
         android:id="@+id/startButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="196dp"
+        android:layout_marginTop="16dp"
         android:onClick="startServer"
         android:text="@string/button_text_start"
         app:layout_constraintEnd_toEndOf="parent"
@@ -39,4 +39,164 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/startButton" />
+
+    <TextView
+        android:id="@+id/textAccelerometerX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="accelerometerX"
+        app:layout_constraintBottom_toTopOf="@+id/textAccelerometerY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textAccelerometerY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="accelerometerY"
+        app:layout_constraintBottom_toTopOf="@+id/textAccelerometerZ"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textAccelerometerX" />
+
+    <TextView
+        android:id="@+id/textAccelerometerZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="accelerometerZ"
+        app:layout_constraintBottom_toTopOf="@+id/textLinearAccelerometerX"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textAccelerometerY" />
+
+    <TextView
+        android:id="@+id/textLinearAccelerometerX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="linearAccelerometerX"
+        app:layout_constraintBottom_toTopOf="@+id/textLinearAccelerometerY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textAccelerometerZ" />
+
+    <TextView
+        android:id="@+id/textLinearAccelerometerY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="linearAccelerometerY"
+        app:layout_constraintBottom_toTopOf="@+id/textLinearAccelerometerZ"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textLinearAccelerometerX" />
+
+    <TextView
+        android:id="@+id/textLinearAccelerometerZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="linearAccelerometerZ"
+        app:layout_constraintBottom_toTopOf="@+id/textGyroscopeX"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textLinearAccelerometerY" />
+
+    <TextView
+        android:id="@+id/textGyroscopeX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="gyroscopeX"
+        app:layout_constraintBottom_toTopOf="@+id/textGyroscopeY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textLinearAccelerometerZ" />
+
+    <TextView
+        android:id="@+id/textGyroscopeY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="gyroscopeY"
+        app:layout_constraintBottom_toTopOf="@+id/textGyroscopeZ"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textGyroscopeX" />
+
+    <TextView
+        android:id="@+id/textGyroscopeZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="gyroscopeZ"
+        app:layout_constraintBottom_toTopOf="@+id/textMagnetometerX"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textGyroscopeY" />
+
+    <TextView
+        android:id="@+id/textMagnetometerX"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="magnetometerX"
+        app:layout_constraintBottom_toTopOf="@+id/textMagnetometerY"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textGyroscopeZ" />
+
+    <TextView
+        android:id="@+id/textMagnetometerY"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="magnetometerY"
+        app:layout_constraintBottom_toTopOf="@+id/textMagnetometerZ"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textMagnetometerX" />
+
+    <TextView
+        android:id="@+id/textMagnetometerZ"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="magnetometerZ"
+        app:layout_constraintBottom_toTopOf="@+id/textAmbientTemperature"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textMagnetometerY" />
+
+    <TextView
+        android:id="@+id/textAmbientTemperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="ambientTemperature"
+        app:layout_constraintBottom_toTopOf="@+id/textLight"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textMagnetometerZ" />
+
+    <TextView
+        android:id="@+id/textLight"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="light"
+        app:layout_constraintBottom_toTopOf="@+id/textPressure"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textAmbientTemperature" />
+
+    <TextView
+        android:id="@+id/textPressure"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="pressure"
+        app:layout_constraintBottom_toTopOf="@+id/textRelativeHumidity"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textLight" />
+
+    <TextView
+        android:id="@+id/textRelativeHumidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="relativeHumidity"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textPressure" />
 </androidx.constraintlayout.widget.ConstraintLayout>
