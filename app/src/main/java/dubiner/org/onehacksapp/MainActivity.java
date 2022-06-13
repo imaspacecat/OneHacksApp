@@ -18,9 +18,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.sql.Time;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 // some inspiration from https://github.com/lopspower/AndroidWebServer/blob/c6a29257e9b077340dcba54871f5b3ed1029fc95/app/src/main/java/com/mikhaellopez/androidwebserver/MainActivity.java#L80
@@ -57,12 +62,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     private final int PORT = 8080;
 
+    float[] orientation;
 //    private float[] gravity;
 //    private float[] geomagnetic;
 //    private float[] rotationMatrix;
 //    private float[] orientation;
 
     public static Map<String, Float> data;
+
+    public static List<TimeAndValue> accelerometerXValues       = new ArrayList<>();
+    public static List<TimeAndValue> accelerometerYValues       = new ArrayList<>();
+    public static List<TimeAndValue> accelerometerZValues       = new ArrayList<>();
+    public static List<TimeAndValue> linearAccelerometerXValues = new ArrayList<>();
+    public static List<TimeAndValue> linearAccelerometerYValues = new ArrayList<>();
+    public static List<TimeAndValue> linearAccelerometerZValues = new ArrayList<>();
+    public static List<TimeAndValue> gyroscopeXValues           = new ArrayList<>();
+    public static List<TimeAndValue> gyroscopeYValues           = new ArrayList<>();
+    public static List<TimeAndValue> gyroscopeZValues           = new ArrayList<>();
+    public static List<TimeAndValue> magnetometerXValues        = new ArrayList<>();
+    public static List<TimeAndValue> magnetometerYValues        = new ArrayList<>();
+    public static List<TimeAndValue> magnetometerZValues        = new ArrayList<>();
+    public static List<TimeAndValue> ambientTemperatureValues   = new ArrayList<>();
+    public static List<TimeAndValue> lightValues                = new ArrayList<>();
+    public static List<TimeAndValue> pressureValues             = new ArrayList<>();
+    public static List<TimeAndValue> relativeHumidityValues     = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +172,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             startButton.setText(R.string.button_text_start);
 
         }
+
+        // scuffed fix
         data.put("accelerometerX", 0f);
         data.put("accelerometerY", 0f);
         data.put("accelerometerZ", 0f);
@@ -164,6 +190,47 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         data.put("light", 0f);
         data.put("pressure", 0f);
         data.put("relativeHumidity", 0f);
+
+
+        Timer timer = new Timer();
+        // thread for recording data in the background
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                long currentTime = System.currentTimeMillis();
+                accelerometerXValues.add(new TimeAndValue(currentTime, data.get("accelerometerX")));
+                accelerometerYValues.add(new TimeAndValue(currentTime, data.get("accelerometerY")));
+                accelerometerZValues.add(new TimeAndValue(currentTime, data.get("accelerometerZ")));
+
+                linearAccelerometerXValues.add(new TimeAndValue(currentTime, data.get("linearAccelerationX")));
+                linearAccelerometerYValues.add(new TimeAndValue(currentTime, data.get("linearAccelerationY")));
+                linearAccelerometerZValues.add(new TimeAndValue(currentTime, data.get("linearAccelerationZ")));
+
+                gyroscopeXValues.add(new TimeAndValue(currentTime, data.get("gyroscopeX")));
+                gyroscopeYValues.add(new TimeAndValue(currentTime, data.get("gyroscopeY")));
+                gyroscopeZValues.add(new TimeAndValue(currentTime, data.get("gyroscopeZ")));
+
+                magnetometerXValues.add(new TimeAndValue(currentTime, data.get("magneticFieldX")));
+                magnetometerYValues.add(new TimeAndValue(currentTime, data.get("magneticFieldY")));
+                magnetometerZValues.add(new TimeAndValue(currentTime, data.get("magneticFieldZ")));
+
+                ambientTemperatureValues.add(new TimeAndValue(currentTime, data.get("ambientTemperature")));
+
+                lightValues.add(new TimeAndValue(currentTime, data.get("light")));
+
+                pressureValues.add(new TimeAndValue(currentTime, data.get("pressure")));
+
+                relativeHumidityValues.add(new TimeAndValue(currentTime, data.get("relativeHumidity")));
+
+//                orientation = getOrientation(gyroscopeXValues, gyroscopeYValues, gyroscopeZValues, 1);
+//                for(int i = 0; i < orientation.length; i++) {
+//                    System.out.println(orientation[i]);
+//                }
+//                System.out.println();
+            }
+        }, 0, 1000);
+
+
     }
 
     private String initIpAddress() {
@@ -172,6 +239,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         System.out.println("Server running at: " + ip + ":" + PORT);
         return "http://" + ip + ":" + PORT + "/";
     }
+
+//    private float[] getOrientation(List<TimeAndValue> angularVelocityX, List<TimeAndValue> angularVelocityY,
+//                                   List<TimeAndValue> angularVelocityZ, int deltaTime){
+//        float[] newAngle = new float[3];
+//        newAngle[0] = angularVelocityX.get(angularVelocityX.size()-1).getValue() * deltaTime * (float) (180/Math.PI);
+//        newAngle[1] = angularVelocityY.get(angularVelocityY.size()-1).getValue() * deltaTime * (float) (180/Math.PI);
+//        newAngle[2] = angularVelocityZ.get(angularVelocityZ.size()-1).getValue() * deltaTime * (float) (180/Math.PI);
+//            if(angularVelocityX.size() > 1){
+//                newAngle[0] += angularVelocityX.get(angularVelocityX.size()-2).getValue();
+//                newAngle[1] += angularVelocityY.get(angularVelocityY.size()-2).getValue();
+//                newAngle[2] += angularVelocityZ.get(angularVelocityZ.size()-2).getValue();
+//            }
+//        return newAngle;
+//    }
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.N)
