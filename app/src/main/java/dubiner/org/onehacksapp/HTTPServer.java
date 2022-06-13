@@ -139,7 +139,13 @@ public class HTTPServer extends NanoHTTPD{
             }
         }
 
+
+
+
         if(!createdJavascript) {
+            for (int i = 0; i < MainActivity.data.keySet().size(); i++) {
+                System.out.println(MainActivity.data.keySet().toArray()[i]);
+            }
             for (int i = 0; i < MainActivity.data.size(); i++) {
                 updateJavascript += "$(\"#data" + i + "\").load(location.href + \" #data" + i + "\");\n";
             }
@@ -351,6 +357,7 @@ public class HTTPServer extends NanoHTTPD{
                 "   \n" +
                 "    \n" +
                 "    <script>\n" +
+                "var jsonAccelerometerXValues =" + jsonAccelerometerXValues + ";\n" +
                 "var jsonAccelerometerYValues =" + jsonAccelerometerYValues + ";\n" +
                 "var jsonAccelerometerZValues =" + jsonAccelerometerZValues + ";\n" +
                 "var jsonLinearAccelerometerXValues =" + jsonLinearAccelerometerXValues + ";\n" +
